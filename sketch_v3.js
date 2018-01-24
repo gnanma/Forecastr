@@ -234,6 +234,15 @@ function drawTemp(){
     var widthRect = x2 - x1;
     var heightRect = (dayHeight)-temp_max-20;
 
+    //add rain graphic
+    fill(255,255,255);
+    rect(x1+15, y0+20, widthRect-15, y1+heightRect-y0-20); // create small canvas
+    if(forecast.list[i].weather[0].id>=500 && forecast.list[i].weather[0].id <532)
+    {
+      rain (x1+16, y0+20, x1+widthRect-2, y1+heightRect-5,rainIntensity);
+    }
+
+
     //draw temp bar
     fill('rgba(153, 153, 255, 0.6)')
     rect( x1, y1, widthRect, heightRect);
@@ -242,21 +251,14 @@ function drawTemp(){
 
     //write weather description
     if( widthRect>50){
-      var descriptionTextSize = map (widthRect,50,80,10,14)
-      if(widthRect>80) descriptionTextSize = 14;
+      var descriptionTextSize = map (widthRect,50,80,8,12)
+      if(widthRect>80) descriptionTextSize = 12;
       textSize(descriptionTextSize);
       text(forecast.list[i].weather[0].description+"",  x1+5, y0,  widthRect, dayHeight-20);
     }
 
     //add weather logo
     // placeWeatherLogo(forecast.list[i].weather[0].icon,imageX+5,imageY+5, widthRect*0.7, dayHeight*0.7,y0)
-    //add rain graphic
-    fill(255,255,255);
-    rect(x1+15, y0+20, widthRect-15, y1+heightRect-y0-20); // create small canvas
-    if(forecast.list[i].weather[0].id>=500 && forecast.list[i].weather[0].id <532)
-    {
-      rain (x1+16, y0+20, x1+widthRect-2, y1+heightRect-5,rainIntensity);
-    }
 
     textSize(9);
     noStroke();
