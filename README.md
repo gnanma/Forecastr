@@ -2,8 +2,8 @@
 A simple five day weather forecast visualisation using P5.js framework on Openweather API data built by Gnan Madishetty
 
 v1 - simple text version
-v2 - standard Openweather icons used
-v3(beta) - custom animations developed ~current version~
+v2 - standard Openweather icons used ~current version~
+v3(beta) - custom animations developed 
 
 
 How to build and run:
