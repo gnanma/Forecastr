@@ -143,13 +143,15 @@ function textDates(){
 
 
   for(var i=0;i<forecast.cnt;i++){
-    if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate){
-      dayOfDate = int(forecast.list[i].dt_txt.substring(8,10))
+    if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate || (int(forecast.list[i].dt_txt.substring(5,7))>monthOfDate && int(forecast.list[i].dt_txt.substring(8,10))<dayOfDate)){
+      monthOfDate = int(forecast.list[i].dt_txt.substring(5,7));
+      dayOfDate = int(forecast.list[i].dt_txt.substring(8,10));
       dayOfFive++;
       textSize(13);
       text(dayOfDate, (dayWidth/18), topPadding+(dayHeight*dayOfFive)-(dayHeight/2));
       textSize(12);
       text(getMonth(monthOfDate), (dayWidth/18)-6, topPadding+10+(dayHeight*dayOfFive)-(dayHeight/2));
+
     }
   }
 }
@@ -158,6 +160,7 @@ function drawTemp(){
 
     var dayOfFive = 0;
     var dayOfDate = int(forecast.list[0].dt_txt.substring(8,10));
+    var monthOfDate = int(forecast.list[0].dt_txt.substring(5,7));
     var timeSlot = (int(forecast.list[0].dt_txt.substring(11,13))/3)+1;
     var temp_max = 0;
     var temp_min = 0;
@@ -168,8 +171,9 @@ function drawTemp(){
     hourOfDate = forecast.list[i].dt_txt.substring(11,13);
     timeSlot = (int(forecast.list[i].dt_txt.substring(11,13))/3)+1;
 
-    if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate){
+    if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate || (int(forecast.list[i].dt_txt.substring(5,7))>monthOfDate && int(forecast.list[i].dt_txt.substring(8,10))<dayOfDate)){
       dayOfDate = int(forecast.list[i].dt_txt.substring(8,10))
+      monthOfDate = int(forecast.list[0].dt_txt.substring(5,7));
       dayOfFive++;
     }
 

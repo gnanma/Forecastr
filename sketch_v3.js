@@ -26,6 +26,8 @@ var minTemp5Days;
 var maxTemp5Days;
 var minRain5Days;
 var maxRain5Days;
+var minWind5Days;
+var maxWind5Days;
 var meanTemp5Days;
 var barHeight;
 var drops = [];
@@ -151,7 +153,53 @@ function forecastr(){
   drawTemp();
   textTimeSlots();
   //makeItRain();
+  drawLegend();
 
+}
+
+function drawLegend(){
+
+  if (dayWidth>625)
+  {
+    //draw temp bar
+
+    fill('rgba(153, 153, 255, 0.3)')
+    rect( 10, 10, 18, dayHeight/5,5,5,5,5);
+    fill('rgba(230, 66, 25, 0.8)')
+    //rect( x1, y0, widthRect/7, dayHeight/1.25);
+    rect( 18, 16, 2, dayHeight/8,5);
+    fill('rgba(134, 124, 121, 1)')
+    text("temperature", 30, 22);
+    //draw rain
+    fill(255,255,255);
+    rect(100, 10, 20, 20); // create small canvas
+    rain (100, 10, 120, 30, 100);
+    fill('rgba(134, 124, 121, 1)')
+    text("rain", 125, 22);
+    //draw clouds
+    cloud(170,30,1)
+    fill('rgba(134, 124, 121, 1)')
+    text("clouds", 195, 22);
+  }
+
+}
+
+function cloud(x, y, size) {
+  //size=size/2;
+	fill('rgba(231, 229, 228,1)');
+	stroke('rgba(255,255,255,0.25)');
+  strokeWeight(0.3);
+	arc(x, y, 25 * size, 20 * size, PI + TWO_PI, TWO_PI);
+  fill('rgba(230, 230, 230,1)');
+  arc(x + 7, y, 24 * size, 35 * size, PI + TWO_PI, TWO_PI);
+  fill('rgb(243, 242, 241)');
+	arc(x + 12, y, 23 * size, 20 * size, PI + TWO_PI, TWO_PI);
+}
+
+
+function clouds(x, y, cloudRange) {
+
+  cloud(x,y,1)
 }
 
 function drawForm(){
@@ -169,9 +217,9 @@ function drawDays(){
   var dayOfFive = 1;
   var dayOfDate = forecast.list[0].dt_txt.substring(8,10);
 	for(var i=0;i<5;i++){
-    stroke(10,10,250)
+    stroke('rgba(153, 204, 255,1)')
     fill(255, 255, 255);
-		rect(10, topPadding+(dayHeight*i), dayWidth, dayHeight);
+		rect(10, topPadding+(dayHeight*i), dayWidth, dayHeight,5);
 	}
 
 }
@@ -184,19 +232,37 @@ function textDates(){
   textSize(13);
   noStroke();
   fill(110, 10, 253, 100);
-  text(dayOfDate, (dayWidth/18), topPadding+(dayHeight*dayOfFive)-(dayHeight/2));
-  textSize(12);
-  text(getMonth(monthOfDate), (dayWidth/18)-6, topPadding+10+(dayHeight*dayOfFive)-(dayHeight/2));
-
-
-  for(var i=0;i<forecast.cnt;i++){
-    if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate){
-      dayOfDate = int(forecast.list[i].dt_txt.substring(8,10))
-      dayOfFive++;
-      textSize(13);
+  if (dayWidth<500){
+      textSize(11);
+      text(dayOfDate, (dayWidth/18), topPadding+(dayHeight*dayOfFive)-(dayHeight/2));
+      textSize(10);
+      text(getMonth(monthOfDate), (dayWidth/18)-6, topPadding+10+(dayHeight*dayOfFive)-(dayHeight/2));
+    }else {
+      text("today", (dayWidth/21), topPadding+(dayHeight*dayOfFive)-(dayHeight/2)-12);
       text(dayOfDate, (dayWidth/18), topPadding+(dayHeight*dayOfFive)-(dayHeight/2));
       textSize(12);
       text(getMonth(monthOfDate), (dayWidth/18)-6, topPadding+10+(dayHeight*dayOfFive)-(dayHeight/2));
+    }
+
+  for(var i=0;i<forecast.cnt;i++){
+    if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate || (int(forecast.list[i].dt_txt.substring(5,7))>monthOfDate && int(forecast.list[i].dt_txt.substring(8,10))<dayOfDate)){
+      monthOfDate = int(forecast.list[i].dt_txt.substring(5,7));
+      dayOfDate = int(forecast.list[i].dt_txt.substring(8,10));
+      dayOfFive++;
+
+      if (dayWidth<500){
+          textSize(11);
+          text(dayOfDate, (dayWidth/18), topPadding+(dayHeight*dayOfFive)-15);
+          textSize(10);
+          text(getMonth(monthOfDate), (dayWidth/18)-6, topPadding+10+(dayHeight*dayOfFive)-15);
+        }
+      else {
+        textSize(13);
+        text(dayOfDate, (dayWidth/18), topPadding+(dayHeight*dayOfFive)-(dayHeight/2));
+        textSize(12);
+        text(getMonth(monthOfDate), (dayWidth/18)-6, topPadding+10+(dayHeight*dayOfFive)-(dayHeight/2));
+      }
+
     }
   }
 }
@@ -205,17 +271,18 @@ function drawTemp(){
 
     var dayOfFive = 0;
     var dayOfDate = int(forecast.list[0].dt_txt.substring(8,10));
+    var monthOfDate = int(forecast.list[0].dt_txt.substring(5,7));
     var timeSlot = (int(forecast.list[0].dt_txt.substring(11,13))/3)+1;
     var temp_max = 0;
     var temp_min = 0;
     var rainIntensity = 0;
     noStroke();
 
-    for(var i=0;i<forecast.cnt;i++){
+    for(var i=0;i<forecast.cnt && (dayOfFive < 5);i++){
     hourOfDate = forecast.list[i].dt_txt.substring(11,13);
     timeSlot = (int(forecast.list[i].dt_txt.substring(11,13))/3)+1;
 
-    if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate){
+    if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate || (int(forecast.list[i].dt_txt.substring(8,10))<dayOfDate && int(forecast.list[i].dt_txt.substring(5,7))>monthOfDate)){
       dayOfDate = int(forecast.list[i].dt_txt.substring(8,10))
       dayOfFive++;
     }
@@ -223,7 +290,7 @@ function drawTemp(){
     temp_max = map(forecast.list[i].main.temp_max,minTemp5Days-5,maxTemp5Days+5,100,0);
     temp_min = map(forecast.list[i].main.temp_min,minTemp5Days-5,maxTemp5Days+5,100,0);
     if (forecast.list[i].weather[0].id>=500 && forecast.list[i].weather[0].id <532) {
-      rainIntensity = round(map(forecast.list[i].rain["3h"],0,maxRain5Days,2,150))
+      rainIntensity = round(map(forecast.list[i].rain["3h"],0,maxRain5Days,0,100))
     }
     var y0 = (dayOfFive*dayHeight)+topPadding+10;
     var x1 = (dayWidth/9)*(timeSlot);
@@ -239,13 +306,17 @@ function drawTemp(){
     rect(x1+15, y0+20, widthRect-15, y1+heightRect-y0-20); // create small canvas
     if(forecast.list[i].weather[0].id>=500 && forecast.list[i].weather[0].id <532)
     {
-      rain (x1+16, y0+20, x1+widthRect-2, y1+heightRect-5,rainIntensity);
+      rain (x1+19, y0+20, x1+widthRect-12, y1+heightRect-1,rainIntensity);
     }
 
+    //draw clouds
+    if(int(forecast.list[i].clouds.all)>10)    clouds(x1+widthRect/2,y0+topPadding-25,1);
 
     //draw temp bar
-    fill('rgba(153, 153, 255, 0.6)')
-    rect( x1, y1, widthRect, heightRect);
+    fill('rgba(153, 153, 255, 0.3)')
+    rect( x1+4, y0, 10, dayHeight-20,5,5,5,5);
+    fill('rgba(230, 66, 25, 0.8)')
+    rect( x1+8, y1, 2, heightRect,5);
     imageX = x1+5;
     imageY = y0;
 
@@ -253,23 +324,24 @@ function drawTemp(){
     if( widthRect>50){
       var descriptionTextSize = map (widthRect,50,80,8,12)
       if(widthRect>80) descriptionTextSize = 12;
+      fill('rgba(153, 153, 255, 0.6)')
       textSize(descriptionTextSize);
-      text(forecast.list[i].weather[0].description+"",  x1+5, y0,  widthRect, dayHeight-20);
+      text(forecast.list[i].weather[0].description+"",  x1+20, y0,  widthRect-10, dayHeight-40);
     }
 
     //add weather logo
     // placeWeatherLogo(forecast.list[i].weather[0].icon,imageX+5,imageY+5, widthRect*0.7, dayHeight*0.7,y0)
 
-    textSize(9);
+    textSize(10);
     noStroke();
     if (forecast.list[i].main.temp<meanTemp5Days/2)
     {
-    fill('rgba(153, 153, 255,0.95)');
-    text(round(forecast.list[i].main.temp)+"°", x1+1, y1-2); // temperature with degrees symbol
+    fill('rgba(10,10,250,0.95)');
+    text(round(forecast.list[i].main.temp)+"°", x1-6, y1-2); // temperature with degrees symbol
     }
     else {
-    fill('rgba(255,255,255,0.95)');
-    text(round(forecast.list[i].main.temp)+"°", x1+1, y1+10); // temperature with degrees symbol
+      fill('rgba(10,10,250,0.95)');
+    text(round(forecast.list[i].main.temp)+"°", x1-7, y1+10); // temperature with degrees symbol
     }
     //text(forecast.list[i].weather[0].description+"", x1+5, y1+10);
     fill('rgba(0,0,255, 0.6)');
@@ -311,7 +383,6 @@ function placeWeatherLogo(icon, x, y, width, height,y0){
       case '50d': selectIcon =  img[16];  break;
       case '50n': selectIcon =  img[17];  break;
       }
-      print(width)
      if (width>70) {
 
        tint(255, width*2);
@@ -345,6 +416,7 @@ function textTimeSlots(){
         text(hourOfDay+"am", x1, (i+1) * dayHeight + topPadding-3);
       }
     }
+    if(dayWidth>430)  text("11:59"+"pm", dayWidth-30, (i+1) * dayHeight + topPadding-3);
   }
 }
 
@@ -353,10 +425,16 @@ function findMinMax(){
   maxTemp5Days = forecast.list[0].main.temp_max;
   minRain5Days = 1;
   maxRain5Days = 0;
+  minWind5Days = 0;
+  maxWind5Days = 0;
 
   for(var i=0;i<forecast.cnt;i++){
       if (forecast.list[i].main.temp_min < minTemp5Days) minTemp5Days = forecast.list[i].main.temp_min;
       if (forecast.list[i].main.temp_max > maxTemp5Days) maxTemp5Days = forecast.list[i].main.temp_max;
+
+      if (forecast.list[i].wind.speed < minWind5Days) minWind5Days = forecast.list[i].wind.speed;
+      if (forecast.list[i].wind.speed > maxWind5Days) maxWind5Days = forecast.list[i].wind.speed;
+
       if (forecast.list[i].weather[0].id>=500 && forecast.list[i].weather[0].id <532) {
           if(minRain5Days >= forecast.list[i].rain["3h"])   minRain5Days = forecast.list[i].rain["3h"];
             if(maxRain5Days <= forecast.list[i].rain["3h"])   maxRain5Days = forecast.list[i].rain["3h"];
@@ -396,27 +474,41 @@ function drain(){
 function Drop(x1,y1,x2,y2,y0,level) {
     this.x = x1;
     this.y = y1;
-    this.yspeed = random(0.7,2);
-    this.diameter = 1;
-    var mappedLevel = map(level,0,100,y2,y0+(topPadding*1.5))
+    this.yspeed = 1.5;//random(0.7,2);
+    this.xspeed = 0;//random(0.7,2);
+    this.diameter = 2;
+    var mappedLevel = map(level,0,100,y2,y0+(topPadding))
+//    print("Level:  \t"+level+" y2: "+y2+"  y0:"+y0+" tpded: "+(topPadding*1.5) +" maps: "+mappedLevel)
+
 
     this.fall = function() {
       this.y = this.y + this.yspeed;
-      if (this.y>=y2) {
+      this.x = this.x - this.xspeed;
+      if (this.y>=y2 || this.x>x2 ){//} || this.x<x1 ) { //}|| this.x<x2  ) {
         this.y = y0;
         this.x = random(x1,x2);
       }
     };
 
     this.show = function() {
-    stroke('rgba(0,204,255, 0.3)');
-    line(this.x,this.y,this.x,this.y+3);
-    stroke('rgba(255,255,255, 0.9)');
-    //fill((255,255,255);
+    //line(this.x,this.y,this.x,this.y);
+    //stroke('rgba(255,255,255, 0.9)');
+    strokeWeight(0);
+    //stroke('rgba(0,204,255, 0.3)');
+    fill('rgba(102, 204, 255, 1)');
+  //  ellipse(this.x, this.y, this.diameter, this.diameter);
+   rect(this.x, this.y, 1, this.diameter+2,5,5);
+    if(this.y<=mappedLevel && this.y>=y0){
+      fill('rgba(255, 255, 255, 1)');
+    rect(this.x-1, this.y, 3, this.diameter);
+    //  ellipse(this.x, this.y-10, this.diameter, this.diameter);
+    }
+    //stroke('rgba(0,204,255, 0.3)');
+    //fill('rgba(255,255,255, 0.3)');
     //ellipse(this.x, this.y, this.diameter, this.diameter);
     //fill('rgba(255,255,255, 1)');
     //rect(x1,y1,x2,y2);
-    if(this.y<=mappedLevel) line(this.x,this.y-5,this.x,this.y);
+    //if(this.y<=mappedLevel) line(this.x,this.y-2,this.x,this.y);
 
     }
 };

@@ -150,7 +150,7 @@ function drawDays(){
   var dayOfFive = 1;
   var dayOfDate = forecast.list[0].dt_txt.substring(8,10);
 	for(var i=0;i<5;i++){
-    stroke(10,10,250)
+    stroke(153, 204, 255)
     fill(255, 255, 255);
 		rect(10, topPadding+(dayHeight*i), dayWidth, dayHeight);
 	}
@@ -159,45 +159,52 @@ function drawDays(){
 
 function textDates(){
 
-  var dayOfFive = 1;
-  var dayOfDate = int(forecast.list[0].dt_txt.substring(8,10))
-  var monthOfDate = int(forecast.list[0].dt_txt.substring(5,7))
-  textSize(13);
-  noStroke();
-  fill(110, 10, 253, 100);
-  text(dayOfDate, (dayWidth/18), topPadding+(dayHeight*dayOfFive)-(dayHeight/2));
-  textSize(12);
-  text(getMonth(monthOfDate), (dayWidth/18)-6, topPadding+10+(dayHeight*dayOfFive)-(dayHeight/2));
+
+    var dayOfFive = 1;
+    var dayOfDate = int(forecast.list[0].dt_txt.substring(8,10))
+    var monthOfDate = int(forecast.list[0].dt_txt.substring(5,7))
+    textSize(13);
+    noStroke();
+    fill(110, 10, 253, 100);
+    text(dayOfDate, (dayWidth/18), topPadding+(dayHeight*dayOfFive)-(dayHeight/2));
+    textSize(12);
+    text(getMonth(monthOfDate), (dayWidth/18)-6, topPadding+10+(dayHeight*dayOfFive)-(dayHeight/2));
 
 
-  for(var i=0;i<forecast.cnt;i++){
-    if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate){
-      dayOfDate = int(forecast.list[i].dt_txt.substring(8,10))
-      dayOfFive++;
-      textSize(13);
-      text(dayOfDate, (dayWidth/18), topPadding+(dayHeight*dayOfFive)-(dayHeight/2));
-      textSize(12);
-      text(getMonth(monthOfDate), (dayWidth/18)-6, topPadding+10+(dayHeight*dayOfFive)-(dayHeight/2));
+    for(var i=0;i<forecast.cnt;i++){
+      if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate || (int(forecast.list[i].dt_txt.substring(5,7))>monthOfDate && int(forecast.list[i].dt_txt.substring(8,10))<dayOfDate)){
+        monthOfDate = int(forecast.list[i].dt_txt.substring(5,7));
+        dayOfDate = int(forecast.list[i].dt_txt.substring(8,10));
+        dayOfFive++;
+        textSize(13);
+        text(dayOfDate, (dayWidth/18), topPadding+(dayHeight*dayOfFive)-(dayHeight/2));
+        textSize(12);
+        text(getMonth(monthOfDate), (dayWidth/18)-6, topPadding+10+(dayHeight*dayOfFive)-(dayHeight/2));
+
+      }
     }
-  }
 }
 
 function drawTemp(){
 
     var dayOfFive = 0;
     var dayOfDate = int(forecast.list[0].dt_txt.substring(8,10));
+    var monthOfDate = int(forecast.list[0].dt_txt.substring(5,7))
     var timeSlot = (int(forecast.list[0].dt_txt.substring(11,13))/3)+1;
     var temp_max = 0;
     var temp_min = 0;
 
     noStroke();
 
-    for(var i=0;i<forecast.cnt;i++){
+    for(var i=0; (i<forecast.cnt) && (dayOfFive < 5) ;i++){
     hourOfDate = forecast.list[i].dt_txt.substring(11,13);
     timeSlot = (int(forecast.list[i].dt_txt.substring(11,13))/3)+1;
+//    dayOfDate = int(forecast.list[0].dt_txt.substring(8,10));
 
-    if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate){
+    if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate || (int(forecast.list[i].dt_txt.substring(8,10))<dayOfDate && int(forecast.list[i].dt_txt.substring(5,7))>monthOfDate)){
+  //  if(int(forecast.list[i].dt_txt.substring(8,10))>dayOfDate){
       dayOfDate = int(forecast.list[i].dt_txt.substring(8,10))
+      monthOfDate = int(forecast.list[i].dt_txt.substring(5,7));
       dayOfFive++;
     }
 
@@ -287,7 +294,6 @@ function placeWeatherLogo(icon, x, y, width, height,y0){
       case '50d': selectIcon =  img[16];  break;
       case '50n': selectIcon =  img[17];  break;
       }
-      print(width)
      if (width>70) {
 
        tint(255, width*2);
